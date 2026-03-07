@@ -52,5 +52,9 @@ def show_datastructure(name: str) -> str:
 def hide_datastructure(name: str) -> str:
     return f"hide {name}"
 
+@merlin_mcp.tool()
+def write_comment(comment: str) -> str:
+    return f"// {comment}"
+
 if __name__ == "__main__":
     merlin_mcp.run()
