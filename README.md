@@ -1,79 +1,92 @@
 # Merlin MCP Server
 
-This is the Model Context Protocol (short MCP) server designed to be interacted with LLMs to generate Merlin code.
+This is the Model Context Protocol (MCP) server designed to be interacted with LLMs to generate Merlin code.
 
-## Getting Started (Terminal)
+## Installation
 
-If you want to run or test the server directly from your terminal using uv, follow these steps:
+After pulling this repo in any folder of your choice, you first need to make sure that you have all the dependencies. The official python MCP library uses `uv`, so we will too. You can get here https://docs.astral.sh/uv/#installation.
 
-Install Dependencies
-
-Ensure you have the required packages installed in your environment:
-
+Then you can install all dependencies with
 ```
-uv add "mcp[cli]" httpx pydantic
+uv pip install -r pyproject.toml
 ```
 
-Run the Server
+Technically you can now run the MCP server with `uv run main.py` but you probably want to use this with your favorite editor. Follow the next paragraph to learn how.
 
-You do not need to manually source the virtual environment if you use ```uv run```. It will automatically detect the .venv in your folder:
+## Usage
 
-```
-uv run merlinmcp.py
-```
+Every code editor and LLM has its own usage usage and there are thousands of ways that you can install MCP servers, such as project-specific or system-wide. You can always check out the official guide of your preferred editor or LLM, but here we describe 3 possible scenarios:
+- VS Code with the standard integrated Github Copilot
+- VS Code with the Gemini Code Assist extension
+- Cursor Editor
 
-Note: The server uses stdio transport, so it will sit silently waiting for JSON-RPC input. To test if it is working, use the MCP Inspector:
+### VS Code (Standard)
 
-```
-npx @modelcontextprotocol/inspector uv run merlinmcp.py
-```
+We follow the simplest official way to [use and configure MCP servers](https://code.visualstudio.com/docs/copilot/customization/mcp-servers).
 
-## Editor Integration
+Open the command palette (`Ctrl/Cmd + Shift + P`) and select "MCP: Add Server...".
+Then select "Command (stdio)" and input the command `uv run main.py`.
 
-Here are two ways to integrate this MCP with editors.
+### VS Code (Gemini)
 
-### Gemini Code Assist in VS Code
-
-To use Merlin in VS Code with Gemini:
-
-Open or create ```~/.gemini/settings.json```.
-
-Add the following configuration (replace with your absolute paths):
+Download [Gemini Code Assist](https://marketplace.visualstudio.com/items?itemName=Google.geminicodeassist) from the extensions marketplace and follow its installation instructions. Gemini Code Assist defines its available MCP servers in `~/.gemini/settings.json`. Open or create it and, after replacing `FOLDER_PATH` with the filepath of the folder where you installed the server, copy-paste this:
 
 ```
 {
   "mcpServers": {
     "merlin-mcp": {
       "command": "uv",
-      "args": ["--directory", "/Users/YOUR_USER/Path/To/Merlin MCP", "run", "merlinmcp.py"],
-      "env": { "PYTHONUNBUFFERED": "1" }
+      "args": [
+        "--directory",
+        "FOLDER_PATH",
+        "run",
+        "python",
+        "main.py"
+      ]
     }
   }
 }
 ```
 
-Restart VS Code and toggle Agent Mode in the Gemini panel.
+Restart VS Code, open the Gemini Code Assist Extension and toggle Agent Mode in the prompt panel.
 
 ### Cursor Editor
 
-To add Merlin to Cursor:
+Cursor defines its MCP server under Settings > Cursor Settings > Tools & MCP.
+Go there and click on "New MCP Server", which opens a .json file. With `FOLDER_PATH` replaced with the filepath of folder where you installed the server, copy-paste the same content as the one in VS Code (Gemini):
 
-Go to Settings > Models > MCP.
+```
+{
+  "mcpServers": {
+    "merlin-mcp": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "FOLDER_PATH",
+        "run",
+        "python",
+        "main.py"
+      ]
+    }
+  }
+}
+```
 
-Click + Add New MCP Server.
-
-Set Type to command and use:
-
-```uv --directory "/Users/YOUR_USER/Path/To/Merlin MCP" run merlinmcp.py```
-
-Look for the Green Dot to confirm the connection.
+A green dot should confirm the connection.
 
 ## Teaching the AI with Few-Shot Examples
 
-To ensure the LLM uses the MCP tools correctly, you can provide context files.
+In `merlin-mcp-examples.md` are examples that show the LMM how to use the Merlin MCP server's tools. It is recommended to give your LLM those examples, so it can learn from it for example how to write comments. As usual there are many way to do that, but here are the ones that work system-wide:
 
-### For Gemini Code Assist
-Create a GEMINI.md file in your project root. Gemini reads this to understand your specific workflow.
+### VS Code (Standard)
 
-### For Cursor
-Create a .cursorrules file in your project root. Cursor automatically includes this in the "System Prompt" for the Agent.
+Open the command palette (`Ctrl/Cmd + Shift + P`) and select "Chat: New Instructions File..." and then "User Data". Give the file a name (f.e. again `merlin-mcp-examples`). Copy-paste the contents of `merlin-mcp-examples.md` into the new file.
+
+### VS Code (Gemini)
+
+Run the command `cp merlin-mcp-examples.md ~/.gemini/GEMINI.md`.
+
+
+### Cursor
+
+Go to Settings > Cursor Settings > Rules, Skills, Subagents. Click in Rules on "+ New" and add a user rule. Copy-paste the contents of `merlin-mcp-examples.md` in there.
