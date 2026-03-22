@@ -23,22 +23,23 @@ def define_array(array_name: str,
     :param right: Optional label to the right of the array. Can be a string or the variable name of a Merlin text object.
     """
     merlin_code = f"""array {array_name} = {{
-  value: {to_merlin(values)}"""
+  value: {to_merlin(values)}
+"""
     
     if color is not None:
-        merlin_code += "\n  color: " + to_merlin(color)
+        merlin_code += f"  color: {to_merlin(color)}\n"
     if arrow is not None:
-        merlin_code += "\n  arrow: " + to_merlin(arrow)
+        merlin_code += f"  arrow: {to_merlin(arrow)}\n"
     if above is not None:
-        merlin_code += "\n  above: \"" + above + "\""
+        merlin_code += f"  above: {to_merlin(above)}\n"
     if below is not None:
-        merlin_code += "\n  below: \"" + below + "\""
+        merlin_code += f"  below: {to_merlin(below)}\n"
     if left is not None:
-        merlin_code += "\n  left: \"" + left + "\""
+        merlin_code += f"  left: {to_merlin(left)}\n"
     if right is not None:
-        merlin_code += "\n  right: \"" + right + "\""
+        merlin_code += f"  right: {to_merlin(right)}\n"
 
-    merlin_code += "\n}"
+    merlin_code += "}"
     return merlin_code
 
 def array_set_label(array_name: str, text: str | None, position: str) -> str:
